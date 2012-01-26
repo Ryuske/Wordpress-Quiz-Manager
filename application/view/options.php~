@@ -1,0 +1,139 @@
+<?php
+global $quiz_manager;
+?>
+<div id="option-tabs" style="clear:both; margin-right:20px;" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+    <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+        <li class="ui-state-default ui-corner-top ui-tabs-selected ui-state-active">
+            <a href="#questions">
+                <span class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-power" style="float: left; margin-right: .3em;"></span></span>
+                Questions
+            </a>
+        </li>
+        <li class="ui-state-default ui-corner-top">
+            <a href="#settings">
+                <span class="ui-state-default ui-corner-all"><span class="ui-icon ui-icon-gear" style="float: left; margin-right: .3em;"></span></span>
+                Settings
+            </a>
+        </li>
+        <li class="ui-state-default ui-corner-top"><a href="#help">Help</a></li>
+    </ul>
+    <div id="questions" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide">
+        <div style="margin: 16px 0;"><h1 style="display: inline;">Questions</h1> <h3 style="display: inline; position: relative; bottom: 1px;"><a href="#" onclick="jQuery('#add').dialog('open')"><span class="ui-icon ui-icon-plusthick" style="display: inline-block; vertical-align: text-top;"></span>Add</a></h3></div>
+        <?php
+        if (empty($quiz_manager->questions)) {
+            echo 'You haven\'t set any questions yet! <a href="#" onclick="jQuery(\'#add\').dialog(\'open\');">Add one now</a>.';
+        } else {
+            ?>
+            <table>
+                <tbody>
+                    <?php
+                    foreach ($quiz_manager->questions as $question) {
+                        if (isset($index)) {
+                            $index++;
+                        } else {
+                            $index = 0;
+                        }
+                        ?>
+                        <tr>
+                            <td><a href="plugins.php?page=quiz_manager&id=<?php echo $index; ?>"><?php esc_html_e($question['question']); ?></a></td>
+                        </tr>
+                        <?php
+                    }
+                    ?>
+                </tbody>
+            </table>
+            <?php
+        }
+        ?>
+    </div>
+    <div id="settings" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide">
+        <h1>Settings</h1>
+        <form id="update_options" name="update_options" action="" method="post">
+            <?php settings_fields('quiz_manager_settings'); ?>
+            <?php $settings = get_option('quiz_manager_settings'); ?>
+            Length of Quiz <input id='quiz_length' name="quiz_manager_settings[quiz_length]" type="text" value="<?php echo $settings['quiz_length']; ?>" /> <br />
+            <br />
+            <input class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" type="submit" value="Save Changes" />
+        </form>
+    </div>
+    <div id="help" class="ui-tabs-panel ui-widget-content ui-corner-bottom ui-tabs-hide">
+        <h1>Help</h1>
+        <p>Eventually, I'll add this.</p>
+    </div>
+    <div id="add" title="Add Question" style="text-align: center;">
+        <form id="add_question" action="" method="post">
+            <label>Question</label> <br />
+            <input style="width: 265px;" name="question" type="text" maxlength="150" /> <br /><br />
+            <table style="margin: 0 auto;">
+                <tbody>
+                    <tr>
+                        <td>Answer A</td>
+                        <td><input name="answer[a]" type="text" /></td>
+                        <td><input name="answer[answer]" type="radio" value="a" /></td>
+                    </tr>
+                    <tr>
+                        <td>Answer B</td>
+                        <td><input name="answer[b]" type="text" /></td>
+                        <td><input name="answer[answer]" type="radio" value="b" /></td>
+                    </tr>
+                        <td>Answer C</td>
+                        <td><input name="answer[c]" type="text" /></td>
+                        <td><input name="answer[answer]" type="radio" value="c" /></td>
+                    <tr>
+                        <td>Answer D</td>
+                        <td><input name="answer[d]" type="text" /></td>
+                        <td><input name="answer[answer]" type="radio" value="d" /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <div id="tips">All form fields are required!</div>
+    </div>
+    <?php
+    if (isset($_GET['id'])) {
+        ?>
+        <script type="text/javascript">jQuery(document).ready(function(){jQuery('#edit').dialog('open');});</script>
+        <?php
+    }
+    ?>
+    <div id="edit" title="Edit Question" style="text-align: center;">
+        <?php
+        if (isset($_GET['id']) && is_numeric($_GET['id']) && $_GET['id'] < count($quiz_manager->questions)) {
+            $id = $_GET['id'];
+            ?>
+            <form id="update_question" action="" method="post">
+                <label>Question</label> <br />
+                <input style="width: 265px;" name="question" type="text" maxlength="150" value="<?php esc_html_e($quiz_manager->questions[$id]['question']); ?>" /> <br /><br />
+                <table style="margin: 0 auto;">
+                    <tbody>
+                        <tr>
+                            <td>Answer A</td>
+                            <td><input name="answer[a]" type="text" /></td>
+                            <td><input name="answer[answer]" type="radio" value="a" value="<?php esc_html_e($quiz_manager->questions[$id]['a']); ?>" /></td>
+                        </tr>
+                        <tr>
+                            <td>Answer B</td>
+                            <td><input name="answer[b]" type="text" /></td>
+                            <td><input name="answer[answer]" type="radio" value="b" value="<?php esc_html_e($quiz_manager->questions[$id]['b']); ?>" /></td>
+                        </tr>
+                            <td>Answer C</td>
+                            <td><input name="answer[c]" type="text" /></td>
+                            <td><input name="answer[answer]" type="radio" value="c" value="<?php esc_html_e($quiz_manager->questions[$id]['c']); ?>" /></td>
+                        <tr>
+                            <td>Answer D</td>
+                            <td><input name="answer[d]" type="text" /></td>
+                            <td><input name="answer[answer]" type="radio" value="d" value="<?php esc_html_e($quiz_manager->questions[$id]['d']); ?>" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+            <div id="tips">All form fields are required!</div>
+            <?php
+        } else {
+            ?>
+            <script type="text/javascript">jQuery(document).ready(function(){jQuery('#edit').dialog('close');});</script>
+            <?php
+        }
+        ?>
+    </div>
+</div>
